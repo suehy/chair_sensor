@@ -1,0 +1,19 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Endpoints for storing and retrieving chair sensor data",
+  "main": "lib/server/index.js",
+  "author": "suehy",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "confus": "^0.0.1",
+    "express": "^4.16.4",
+    "mongoose": "^5.4.11",
+    "nodemon": "^1.18.10",
+    "winston": "^3.2.1"
+  },
+  "scripts": {
+    "main": "nodemon lib/index.js"
+  }
+}

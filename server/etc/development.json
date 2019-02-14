@@ -1,0 +1,8 @@
+{
+  "server": {
+    "protocol": "http",
+    "hostName": "localhost",
+    "port": 4000,
+    "httpsPort": 3000
+  }
+}

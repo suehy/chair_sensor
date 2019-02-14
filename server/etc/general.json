@@ -1,0 +1,16 @@
+{
+    "database": {
+        "port": 27017,
+        "database_name": "thesis",
+        "options": {
+            "autoIndex": true,
+            "reconnectInterval": 500,
+            "poolSize": 10,
+            "bufferMaxEntries": 0,
+            "useNewUrlParser": true
+        }
+    },
+    "routes": {
+        "apiservice" : {"baseUrl" : "api"}
+    }
+}
