@@ -1,8 +1,16 @@
-var net = require('net')
-var mqttCon = require('mqtt-connection')
-var stream = net.createConnection(1883, 'localhost')
-var conn = mqttCon(stream)
+var mqtt = require('mqtt');
+var client = mqtt.connect('mqtt:localhost', {clientId: 'mqtt0'});
 
-// conn is your MQTT connection!
-
-console.log('client hey');
+client.on('connect', function () {
+    client.subscribe('presence', function (err) {
+        if (!err) {
+            client.publish('presence', 'Hello mqtt')
+        }
+    })
+})
+ 
+client.on('message', function (topic, message) {
+    // message is Buffer
+    console.log(message.toString())
+    client.end()
+})
