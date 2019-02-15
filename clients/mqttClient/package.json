@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "mqtt-connection": "^4.0.0",
+    "net": "^1.0.2"
+  }
+}
