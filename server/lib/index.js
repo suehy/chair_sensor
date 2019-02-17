@@ -27,8 +27,8 @@ require('./routes')(app);
 // Require all stats and trackers
 //require('./stats')(app);
 
-// We will save server related logic (such as port listening)
-require('./server')(app);
-
 // Initialize the database client
 app.components.DatabaseDriver.connect();
+
+// We will save server related logic (such as port listening)
+require('./server')(app);

@@ -4,5 +4,12 @@
     "hostName": "localhost",
     "port": 4000,
     "httpsPort": 3000
+},
+  "mqttBroker": {
+    "type": "mongo",
+    "hostName": "mongodb://localhost",
+    "dbPort": 27017,
+    "pubsubCollection": "ascoltatori",
+    "port" : 1883
   }
 }

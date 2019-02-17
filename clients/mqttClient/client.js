@@ -1,16 +1,10 @@
 var mqtt = require('mqtt');
-var client = mqtt.connect('mqtt:localhost', {clientId: 'mqtt0'});
+var client = mqtt.connect('mqtt:localhost:1883', {clientId: 'publisher'});
+
+var rawAccelData = {
+    x: 1, y: 2, z: 3
+}
 
 client.on('connect', function () {
-    client.subscribe('presence', function (err) {
-        if (!err) {
-            client.publish('presence', 'Hello mqtt')
-        }
-    })
-})
- 
-client.on('message', function (topic, message) {
-    // message is Buffer
-    console.log(message.toString())
-    client.end()
+    client.publish('rawAccelData', JSON.stringify(rawAccelData));
 })
