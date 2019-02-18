@@ -36,6 +36,10 @@ Publisher.prototype.publish = function(msg, options, cb) {
     });
 }
 
+Publisher.prototype.end() = function() {
+    self.client.end();
+}
+
 module.exports = function(options) {
     self = new Publisher(options);
     return self;
