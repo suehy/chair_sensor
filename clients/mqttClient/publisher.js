@@ -25,12 +25,15 @@ Publisher.prototype.connectToBroker = function(options, successCb) {
     });
 }
 
-Publisher.prototype.publish = function(msg, options) {
-    var rawAccelData = {
-        x: 9999, y: 2, z: 3
-    };
-
-    self.client.publish('rawAccelData', JSON.stringify(rawAccelData));
+Publisher.prototype.publish = function(msg, options, cb) {
+    return new Promise((resolve, reject) => {
+        self.client.publish('rawAccelData', JSON.stringify(msg), options, (err) => {
+            if (err) {
+                reject(err);
+            }
+            resolve('success');
+        });
+    });
 }
 
 module.exports = function(options) {
