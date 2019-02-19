@@ -36,7 +36,7 @@ Publisher.prototype.publish = function(msg, options, cb) {
     });
 }
 
-Publisher.prototype.end() = function() {
+Publisher.prototype.end = function() {
     self.client.end();
 }
 

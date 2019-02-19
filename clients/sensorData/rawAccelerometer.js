@@ -76,10 +76,10 @@ function onDiscover(thingy) {
       thingy.button_enable(function(error) {
           console.log('Button started! ' + ((error) ? error : ''));
       });
-      this.raw_enable(function(error) {
+      thingy.raw_enable(function(error) {
           console.log('Raw sensor started! ' + ((error) ? error : ''));
       });
-      // this.gravity_enable(function(error) {
+      // thingy.gravity_enable(function(error) {
       //     console.log('Gravity sensor started! ' + ((error) ? error : ''));
       // });
     });
