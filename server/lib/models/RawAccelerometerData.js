@@ -21,7 +21,7 @@ const RawAccelerometerData = new Schema({
             type: String
         },
         subject: {
-            type: String
+            type: Number
         },
         x: {
             type: Number,
