@@ -18,10 +18,10 @@ const RawAccelerometerData = new Schema({
             default: Date.now
         },
         state: {
-            type: String
+            type: Number
         },
         subject: {
-            type: Number
+            type: String
         },
         x: {
             type: Number,

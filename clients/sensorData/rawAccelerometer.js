@@ -1,4 +1,4 @@
-var Thingy = require('thingy52');
+//var Thingy = require('thingy52');
 var keypress = require('keypress');
 keypress(process.stdin);
 
@@ -32,7 +32,7 @@ process.stdin.on('keypress', function (ch, key) {
     }
 });
 
-process.stdin.setRawMode(true);
+//process.stdin.setRawMode(true);
 process.stdin.resume();
 
 const EventEmitter = require('events');
@@ -44,8 +44,9 @@ const STATES = {
     "SITTING": 1
 }
 
+var subject = process.argv.length >= 3 ? process.argv[2] : "";
 var enabled;
-var state = STATES.SITTING;
+var state = process.argv.length >= 4 ? parseInt(process.argv[3]) : STATES.SITTING;
 
 var options = {
     host: "health-iot.labs.vu.nl",
@@ -68,7 +69,7 @@ function onRawData(raw_data) {
     //     raw_data.gyroscope.x, raw_data.gyroscope.y, raw_data.gyroscope.z);
     // console.log('Raw data: Compass: x %d, y %d, z %d',
     //     raw_data.compass.x, raw_data.compass.y, raw_data.compass.z);
-    var msg = { x: raw_data.accelerometer.x, y: raw_data.accelerometer.y, z: raw_data.accelerometer.z, state: state };
+    var msg = { x: raw_data.accelerometer.x, y: raw_data.accelerometer.y, z: raw_data.accelerometer.z, state: state, subject: subject };
     publisher.publish(msg);
 }
 
@@ -150,7 +151,7 @@ var publisher = require('../mqttClient/publisher')(options);
 publisher.connectToBroker(options, connectToBrokerSuccess)
 .then(() => {
     console.log('Started thingy discovery');
-    Thingy.discover(onDiscover);
+    //Thingy.discover(onDiscover);
 
     //TODO implement stop and start and label event emitter and handler
 })
