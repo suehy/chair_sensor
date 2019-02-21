@@ -57,9 +57,9 @@ function connectToBrokerSuccess() {
     console.log('Publisher connected to MQTT broker');
 }
 
-function onGravityData(gravity) {
-    console.log('Gravity: x: %d, y %d, z %d', gravity.x, gravity.y, gravity.z);
-}
+// function onGravityData(gravity) {
+//     console.log('Gravity: x: %d, y %d, z %d', gravity.x, gravity.y, gravity.z);
+// }
 
 function onRawData(raw_data) {
     console.log('Raw data: Accelerometer: x %d, y %d, z %d',
@@ -120,8 +120,8 @@ function onDiscover(thingy) {
       console.log('Reading Thingy Motion sensors!');
 
       thingy.on('rawNotif', onRawData);
-      thingy.on('gravityNotif', onGravityData);
-      thingy.on('buttonNotif', onButtonChange);
+      // thingy.on('gravityNotif', onGravityData);
+      // thingy.on('buttonNotif', onButtonChange);
 
       thingy.motion_processing_freq_set(5, function(error) {
           if (error) {
@@ -131,9 +131,9 @@ function onDiscover(thingy) {
 
       enabled = true;
 
-      thingy.button_enable(function(error) {
-          console.log('Button started! ' + ((error) ? error : ''));
-      });
+      // thingy.button_enable(function(error) {
+      //     console.log('Button started! ' + ((error) ? error : ''));
+      // });
       thingy.raw_enable(function(error) {
           console.log('Raw sensor started! ' + ((error) ? error : ''));
       });
