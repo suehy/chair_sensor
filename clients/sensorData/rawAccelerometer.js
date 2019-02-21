@@ -62,8 +62,8 @@ function connectToBrokerSuccess() {
 // }
 
 function onRawData(raw_data) {
-    console.log('Raw data: Accelerometer: x %d, y %d, z %d',
-        raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z);
+    console.log('Raw data: Accelerometer: x %d, y %d, z %d, state %d',
+        raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z, state);
     // console.log('Raw data: Gyroscope: x %d, y %d, z %d',
     //     raw_data.gyroscope.x, raw_data.gyroscope.y, raw_data.gyroscope.z);
     // console.log('Raw data: Compass: x %d, y %d, z %d',
