@@ -30,8 +30,17 @@ function insertRawAccelerometerData(params) {
     return Promise.resolve((new self.RawAccelerometerDataModel).addRawData(dataObj));
 }
 
+function getRawAccelerometerData(params) {
+    self.logger.log("info", "in getRawAccelerometerData");
+    return Promise.resolve((new self.RawAccelerometerDataModel).getRawData(params));
+}
+
 RawAccelerometerDataManagement.prototype.InsertRawAccelerometerData = function(params) {
     return insertRawAccelerometerData(params)
+}
+
+RawAccelerometerDataManagement.prototype.GetRawAccelerometerData = function(params) {
+    return getRawAccelerometerData(params)
 }
 
 module.exports = function(app) {

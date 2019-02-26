@@ -16,5 +16,18 @@ module.exports = function(app) {
         })
     });
 
+    router.get('/getRawAccelerometerData', function(req, res, next) {
+        logger.log("info", "api/getRawAccelerometerData", req.query);
+        app.components.RawAccelerometerDataManagement.GetRawAccelerometerData(req.query)
+        .then((data) => {
+            logger.log("info", "RawAccelerometerData get success");
+            res.status(200).send(data);
+        })
+        .catch((error) => {
+            logger.log("error", error);
+            res.status(400).end();
+        })
+    });
+
     return router;
 };
