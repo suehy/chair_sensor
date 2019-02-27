@@ -21,7 +21,7 @@ module.exports = function(app) {
         app.components.RawAccelerometerDataManagement.GetRawAccelerometerData(req.query)
         .then((data) => {
             logger.log("info", "RawAccelerometerData get success");
-            res.status(200).send(data);
+            res.status(200).send({"data": data});
         })
         .catch((error) => {
             logger.log("error", error);
