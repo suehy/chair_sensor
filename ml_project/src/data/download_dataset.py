@@ -12,6 +12,7 @@ def main(source, dest, subject):
     logger = logging.getLogger(__name__)
     logger.info('Downloading raw dataset from ' + source)
 
+    params = {}
     if subject != None:
         params = {'subject': subject}
 
