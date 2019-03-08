@@ -5,10 +5,9 @@ import datetime
 
 @click.command()
 @click.argument('source', type=click.Path())
-@click.argument('dest', type=click.Path())
 @click.option('--freq')
-def main(source, dest, freq):
-    """ Sort and divide dataset by frequency """
+def main(source, freq):
+    """ Sort and divide dataset by frequency and subject """
 
     logger = logging.getLogger(__name__)
     logger.info('Diviving raw dataset from ' + source + ' by ' + freq + ' Hz')
@@ -30,9 +29,9 @@ def main(source, dest, freq):
         for name in dataByName:
             dataByName[name].sort(key=lambda x: datetime.datetime.strptime(x['timestamp'], format))
 
-        f = open(dest, 'w')
-        f.write(json.dumps(dataByName))
-        f.close()
+        #f = open(dest, 'w')
+        #f.write(json.dumps(dataByName))
+        #f.close()
 
         # countList = []
         # count = 0
@@ -50,18 +49,16 @@ def main(source, dest, freq):
 
         #divide by frequency
         if not freq == None:
-            dividedData = {}
             step = 200/int(freq)
             for subj in dataByName:
+                dividedData = {}
                 dividedData[subj] = []
                 for i, val in enumerate(dataByName[subj]):
                     if i % step == 0:
                         dividedData[subj].append(dataByName[subj][i])
-            f = open('../../data/interim/' + freq + 'hz.json', 'w')
-            f.write(json.dumps(dividedData))
-            f.close()
-            # print(len(dividedData['flori']))
-            # print(len(dataByName['flori']))
+                f = open('../../data/interim/' + subj + freq + 'hz.json', 'w')
+                f.write(json.dumps(dividedData))
+                f.close()
 
 if __name__ == '__main__':
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
