@@ -23,6 +23,7 @@ def main(source, freq):
                 dataByName[key] = []
             del e['subject']
             del e['_id']
+            del e['__v']
             dataByName[key].append(e)
 
         format = '%Y-%m-%dT%H:%M:%S.%fZ'
