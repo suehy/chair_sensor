@@ -53,11 +53,11 @@ def load_dataset(source, freq):
         if not match:
             continue
         #df = read_json(filename)
-        json_file = open(filename)
-        data = json.load(json_file)
-        subject = ''.join(data.keys())
-        subjects[subject] = data[subject]
-    json_file.close()
+        with open(filename) as json_file:
+            data = json.load(json_file)
+            subject = ''.join(data.keys())
+            subjects[subject] = data[subject]
+            json_file.close()
     return subjects
 
 if __name__ == '__main__':
