@@ -12,6 +12,14 @@ process.stdin.on('keypress', function (ch, key) {
         state = STATES.NOTSITTING;
         console.log('STATE == not sittng');
     }
+    else if (key && key.name == 'i') { // sit-to-stand
+        state = STATES.SITTOSTAND;
+        console.log('STATE == sit-to-stand');
+    }
+    else if (key && key.name == 't') { // stand-to-sit
+        state = STATES.STANDTOSIT;
+        console.log('STATE == stand-to-sit');
+    }
     else if (key && key.ctrl && key.name == 'b') {
         // Pause sampling
         if (enabled) {
@@ -41,7 +49,9 @@ const myEmitter = new MyEmitter();
 
 const STATES = {
     "NOTSITTING": 0,
-    "SITTING": 1
+    "SITTING": 1,
+    "SITTOSTAND": 2,
+    "STANDTOSIT": 3
 }
 
 var subject = process.argv.length >= 3 ? process.argv[2] : "";

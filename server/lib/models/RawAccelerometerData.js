@@ -8,8 +8,8 @@ var logger;
 const STATES = {
     "NOTSITTING": 0,
     "SITTING": 1,
-    "STANDINGUP": 2,
-    "SITTINGDOWN": 3
+    "SITTOSTAND": 2,
+    "STANDTOSIT": 3
 }
 
 const RawAccelerometerData = new Schema({
