@@ -36,7 +36,9 @@ Project Organization
     │   ├── __init__.py    <- Makes src a Python module
     │   │
     │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
+    │   │   └── download_dataset.py     <- download raw dataset from server
+    │   │   └── divide_dataset.py       <- given frequency, divide raw dataset into separate JSON files for each subject
+    │   │   └── prepare_data.py         <- given window size and test set size, preprocess data into recurrent sliding windows and saves training and test data into separate csv files
     │   │
     │   ├── features       <- Scripts to turn raw data into features for modeling
     │   │   └── build_features.py
