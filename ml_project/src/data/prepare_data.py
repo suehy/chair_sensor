@@ -55,13 +55,13 @@ def main(source, dest, freq, win, test):
                 size += len(shifted_data[name])
             i += 1
 
-        X_train = train_df.drop('state', axis=1)
-        y_train = train_df['state']
-        X_test = test_df.drop('state', axis=1)
-        y_test = test_df['state']
+        # X_train = train_df.drop('state', axis=1)
+        # y_train = train_df['state']
+        # X_test = test_df.drop('state', axis=1)
+        # y_test = test_df['state']
 
-        print(X_train[:10])
-        print(X_test[:10])
+        train_df.to_csv(dest + '/train.csv', index=False)
+        test_df.to_csv(dest + '/test.csv', index=False)
 
 def split_data(test_size):
     return 0
