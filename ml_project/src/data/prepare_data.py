@@ -14,7 +14,7 @@ import csv
 @click.argument('dest')
 @click.argument('freq')
 @click.option('--win')
-@click.option('--test')
+@click.option('--test') # number of subjects in test set
 def main(source, dest, freq, win, test):
     """ Preprocess data for model training and split into train/test set """
 
@@ -37,8 +37,31 @@ def main(source, dest, freq, win, test):
         # Saving separate csv for each subject
         save_as_csv(shifted_data[name], name, dest, freq, win)
 
-    # if not test == None:
-    #     i = 0
+    if not test == None:
+        print('Nr. subjects in test size:', len(shifted_data.keys()))
+        nr_subjects = len(shifted_data.keys())
+        train_df = DataFrame()
+        test_df = DataFrame()
+
+        size = 0
+        i = 0
+        for name in shifted_data:
+            print(name)
+            if i >= nr_subjects - int(test):
+                test_df = test_df.append(shifted_data[name])
+                size += len(shifted_data[name])
+            else:
+                train_df = train_df.append(shifted_data[name])
+                size += len(shifted_data[name])
+            i += 1
+
+        X_train = train_df.drop('state', axis=1)
+        y_train = train_df['state']
+        X_test = test_df.drop('state', axis=1)
+        y_test = test_df['state']
+
+        print(X_train[:10])
+        print(X_test[:10])
 
 def split_data(test_size):
     return 0
