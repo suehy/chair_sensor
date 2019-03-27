@@ -15,7 +15,8 @@ import csv
 @click.argument('freq')
 @click.option('--win')
 @click.option('--test') # number of subjects in test set
-def main(source, dest, freq, win, test):
+@click.option('--overlap')
+def main(source, dest, freq, win, test, overlap):
     """ Preprocess data for model training and split into train/test set """
 
     logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ def main(source, dest, freq, win, test):
     shifted_data = {}
     for name in subjects:
         data = pd.DataFrame.from_dict(subjects[name])
-        shifted_data[name] = shift_data(data, int(win))
+        shifted_data[name] = shift_data(data, int(win), overlap)
         # Saving separate csv for each subject
         save_as_csv(shifted_data[name], name, dest, freq, win)
 
@@ -55,25 +56,26 @@ def main(source, dest, freq, win, test):
                 size += len(shifted_data[name])
             i += 1
 
-        # X_train = train_df.drop('state', axis=1)
-        # y_train = train_df['state']
-        # X_test = test_df.drop('state', axis=1)
-        # y_test = test_df['state']
-
         train_df.to_csv(dest + '/train.csv', index=False)
         test_df.to_csv(dest + '/test.csv', index=False)
 
 def split_data(test_size):
     return 0
 
-def shift_data(df, win):
+def shift_data(df, win, overlap):
     shifted_df = DataFrame()
     for i in range(0, win):
         shifted_df['x' + str(i)] = df['x'].shift(i)
         shifted_df['y' + str(i)] = df['y'].shift(i)
         shifted_df['z' + str(i)] = df['z'].shift(i)
     shifted_df['state'] = df['state']
-    shifted_df.drop(df.index[:win-1], inplace=True)
+
+    # Calculate overlap percentage
+    # if overlap == None:
+    #     overlap = 0
+
+    #shifted_df.drop(shifted_df.index[:win-1], inplace=True)
+    shifted_df = shifted_df.iloc[win-1::win, :]
     return shifted_df
 
 def save_as_csv(df, subj, dest, freq, win):
