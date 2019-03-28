@@ -8,6 +8,7 @@ from pandas import DataFrame
 import pandas as pd
 import re
 import csv
+import math
 
 @click.command()
 @click.argument('source', type=click.Path())
@@ -39,7 +40,7 @@ def main(source, dest, freq, win, test, overlap):
         save_as_csv(shifted_data[name], name, dest, freq, win)
 
     if not test == None:
-        print('Nr. subjects in test size:', len(shifted_data.keys()))
+        print('Nr. subjects in dataset:', len(shifted_data.keys()))
         nr_subjects = len(shifted_data.keys())
         train_df = DataFrame()
         test_df = DataFrame()
@@ -47,11 +48,12 @@ def main(source, dest, freq, win, test, overlap):
         size = 0
         i = 0
         for name in shifted_data:
-            print(name)
             if i >= nr_subjects - int(test):
+                print('test:', name)
                 test_df = test_df.append(shifted_data[name])
                 size += len(shifted_data[name])
             else:
+                print('train:', name)
                 train_df = train_df.append(shifted_data[name])
                 size += len(shifted_data[name])
             i += 1
@@ -62,7 +64,7 @@ def main(source, dest, freq, win, test, overlap):
 def split_data(test_size):
     return 0
 
-def shift_data(df, win, overlap):
+def shift_data(df, win, overlap_ratio):
     shifted_df = DataFrame()
     for i in range(0, win):
         shifted_df['x' + str(i)] = df['x'].shift(i)
@@ -70,12 +72,20 @@ def shift_data(df, win, overlap):
         shifted_df['z' + str(i)] = df['z'].shift(i)
     shifted_df['state'] = df['state']
 
-    # Calculate overlap percentage
-    # if overlap == None:
-    #     overlap = 0
+    if overlap_ratio == None:
+        overlap = 0
+    else:
+        overlap_ratio = float(overlap_ratio)
+        overlap = overlap_ratio * win
 
-    #shifted_df.drop(shifted_df.index[:win-1], inplace=True)
-    shifted_df = shifted_df.iloc[win-1::win, :]
+        if win - overlap < 1:
+            print('rounded down:', math.floor(overlap))
+            overlap = math.floor(overlap)
+        else:
+            print('rounded down:', math.ceil(overlap))
+            overlap = math.ceil(overlap)
+
+    shifted_df = shifted_df.iloc[win-1::win-overlap, :]
     return shifted_df
 
 def save_as_csv(df, subj, dest, freq, win):
