@@ -36,6 +36,7 @@ def main(source, dest, freq, win, test, overlap):
     for name in subjects:
         data = pd.DataFrame.from_dict(subjects[name])
         shifted_data[name] = shift_data(data, int(win), overlap)
+        shifted_data[name].insert(0, 'name', name)
         # Saving separate csv for each subject
         save_as_csv(shifted_data[name], name, dest, freq, win)
 
