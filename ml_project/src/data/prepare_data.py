@@ -80,10 +80,7 @@ def main(source, dest, freq, win, test, overlap):
         if filename == 'state_train':
             print('state_train')
             i = 0
-            framed_samples = []
-            while i < len(samples_dict[filename]):
-                framed_samples.append(samples_dict[filename][i:i+int(win)])
-                i += int(win)
+            framed_samples = [[x] for x in samples_dict[filename][int(win)-1::int(win)]]
         else:
             i = 0
             framed_samples = []
@@ -98,11 +95,7 @@ def main(source, dest, freq, win, test, overlap):
     for filename in filenames_test:
         if filename == 'state_test':
             print('state_test')
-            i = 0
-            framed_samples = []
-            while i < len(samples_dict[filename]):
-                framed_samples.append(samples_dict[filename][i:i+int(win)])
-                i += int(win)
+            framed_samples = [[x] for x in samples_dict[filename][int(win)-1::int(win)]]
         else:
             i = 0
             framed_samples = []
