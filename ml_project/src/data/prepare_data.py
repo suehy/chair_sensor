@@ -82,11 +82,7 @@ def main(source, dest, freq, win, test, overlap):
             i = 0
             framed_samples = [[x] for x in samples_dict[filename][int(win)-1::int(win)]]
         else:
-            i = 0
-            framed_samples = []
-            while i < len(samples_dict[filename]):
-                framed_samples.append(samples_dict[filename][i:i+int(win)])
-                i += int(win)
+            framed_samples = [samples_dict[filename][i:i+int(win)] for i in range(0, len(samples_dict[filename]), int(win)) if i+int(win)-1 <= len(samples_dict[filename])]
         with open(dest + '/train/' + filename + '_' + win + '_' + freq + '.csv', 'w') as outFile:
             writer = csv.writer(outFile)
             writer.writerows(framed_samples)
@@ -97,11 +93,7 @@ def main(source, dest, freq, win, test, overlap):
             print('state_test')
             framed_samples = [[x] for x in samples_dict[filename][int(win)-1::int(win)]]
         else:
-            i = 0
-            framed_samples = []
-            while i < len(samples_dict[filename]):
-                framed_samples.append(samples_dict[filename][i:i+int(win)])
-                i += int(win)
+            framed_samples = [samples_dict[filename][i:i+int(win)] for i in range(0, len(samples_dict[filename]), int(win)) if i+int(win)-1 <= len(samples_dict[filename])]
         with open(dest + '/test/' + filename + '_' + win + '_' + freq + '.csv', 'w') as outFile:
             writer = csv.writer(outFile)
             writer.writerows(framed_samples)
@@ -140,9 +132,9 @@ def main(source, dest, freq, win, test, overlap):
         test_df.to_csv(dest + '/test.csv', index=False)
 
 # Split x, y and z samples based on window size and then merge them together into training and test samples
-def split_merge_data(data, win, test):
-
-    return 0
+# def split_merge_data(data, win, test):
+#
+#     return 0
 
 def shift_data(df, win, overlap_ratio):
     shifted_df = DataFrame()
