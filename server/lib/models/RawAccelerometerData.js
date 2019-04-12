@@ -41,12 +41,16 @@ const RawAccelerometerData = new Schema({
 RawAccelerometerData.methods.addRawData = function(params) {
     logger.log("info", "In RawAccelerometerDataModel addRawData", params);
     var RawAccelerometerDataModel = mongoose.model('RawAccelerometerData');
+    if (params['timestamp']) {
+	console.log(params['timestamp'])
+        params['timestamp'] = new Date(params['timestamp'])
+    }
     return new RawAccelerometerDataModel(params).save();
 }
 
 RawAccelerometerData.methods.getRawData = function(params) {
     logger.log("info", "In RawAccelerometerDataModel getRawData", params);
-    return this.model('RawAccelerometerData').find(params).exec()
+    return this.model('RawAccelerometerData').find(params).lean().exec()
     .catch((err) => {
         logger.log("error", err);
         return Promise.reject("Error getting raw accelerometer data");
