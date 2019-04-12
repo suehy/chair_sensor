@@ -9,8 +9,15 @@ import datetime
 def main(source, freq):
     """ Sort and divide dataset by frequency and subject """
 
+    freq_str = freq
+    if not freq == None:
+        step = 200/int(freq)
+    else:
+        step = 1
+        freq_str = '200'
+
     logger = logging.getLogger(__name__)
-    logger.info('Diviving raw dataset from ' + source + ' by ' + freq + ' Hz')
+    logger.info('Diviving raw dataset from ' + source + ' by ' + freq_str + ' Hz')
 
     with open(source) as json_file:
         data = json.load(json_file)['data']
@@ -51,15 +58,15 @@ def main(source, freq):
         #divide by frequency
         if not freq == None:
             step = 200/int(freq)
-            for subj in dataByName:
-                dividedData = {}
-                dividedData[subj] = []
-                for i, val in enumerate(dataByName[subj]):
-                    if i % step == 0:
-                        dividedData[subj].append(dataByName[subj][i])
-                f = open('../../data/interim/' + subj + freq + 'hz.json', 'w')
-                f.write(json.dumps(dividedData))
-                f.close()
+        for subj in dataByName:
+            dividedData = {}
+            dividedData[subj] = []
+            for i, val in enumerate(dataByName[subj]):
+                if i % step == 0:
+                    dividedData[subj].append(dataByName[subj][i])
+            f = open('../../data/interim/' + subj + freq_str + 'hz.json', 'w')
+            f.write(json.dumps(dividedData))
+            f.close()
 
 if __name__ == '__main__':
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
