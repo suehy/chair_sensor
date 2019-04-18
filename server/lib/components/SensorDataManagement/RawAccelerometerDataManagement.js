@@ -20,6 +20,7 @@ function insertRawAccelerometerData(params) {
     // Extract raw accelerometer data out of params
     //TODO: should validate this
     let dataObj = {
+	timestamp: params.timestamp,
         subject: params.subject,
         state: params.state,
         x: params.x,
