@@ -32,7 +32,7 @@ publisher.connectToBroker(options, connectToBrokerSuccess)
                 console.log(key)
                 var data = data_dict[key]
                 console.log(data.length);
-                for (var i = 100000; i < 111377; i++) {
+                for (var i = 0; i < data.length; i++) {
                     var sample = data[i]
                     var msg = { x: sample['x'],
                                 y: sample['y'],
@@ -41,7 +41,7 @@ publisher.connectToBroker(options, connectToBrokerSuccess)
                                 subject: key,
                                 timestamp: sample['timestamp']
                     }
-                    publisher.publish(msg);
+                    //publisher.publish(msg);
                  }
             }
 
