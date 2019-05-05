@@ -51,11 +51,14 @@ def main(source, dest, freq, win, test, overlap):
         samples_dict[name] = []
 
     nr_subjects = len(subjects.keys())
+    train_subjects = []
+    test_subjects = []
     i = 0
     total = 0
     for name in subjects:
         if i >= nr_subjects - int(test):
             print('test:', name)
+            test_subjects.append(name)
             for j in range(len(subjects[name])):
                 sample = subjects[name][j]
                 samples_dict['total_acc_x_test'].append(sample['x'])
@@ -64,6 +67,7 @@ def main(source, dest, freq, win, test, overlap):
                 samples_dict['state_test'].append(sample['state'])
         else:
             print('train:', name)
+            train_subjects.append(name)
             for j in range(len(subjects[name])):
                 sample = subjects[name][j]
                 samples_dict['total_acc_x_train'].append(sample['x'])
@@ -121,7 +125,8 @@ def main(source, dest, freq, win, test, overlap):
         size = 0
         i = 0
         for name in shifted_data:
-            if i >= nr_subjects - int(test):
+            # if i >= nr_subjects - int(test):
+            if name in test_subjects:
                 path = 'test/'
                 print('test:', name)
                 test_df = test_df.append(shifted_data[name])
@@ -141,12 +146,25 @@ def main(source, dest, freq, win, test, overlap):
 #
 #     return 0
 
+def find_majority(k):
+    myMap = {}
+    maximum = ( '', 0 ) # (occurring element, occurrences)
+    for n in k:
+        if n in myMap: myMap[n] += 1
+        else: myMap[n] = 1
+
+        # Keep track of maximum on the go
+        if myMap[n] > maximum[1]: maximum = (n,myMap[n])
+
+    return maximum
+
 def shift_data(df, win, overlap):
     shifted_df = DataFrame()
     for i in range(0, win):
         shifted_df['x' + str(i)] = df['x'].shift(i)
         shifted_df['y' + str(i)] = df['y'].shift(i)
         shifted_df['z' + str(i)] = df['z'].shift(i)
+
     shifted_df['state'] = df['state']
 
     # if overlap_ratio == None:
@@ -162,20 +180,29 @@ def shift_data(df, win, overlap):
     #         print('rounded down:', math.ceil(overlap))
     #         overlap = math.ceil(overlap)
 
+    frame_states = []
+    # The most occurring state is use as label for a given window frame
+    i = 0
+    while i < len(df['state']) and i+win <= len(df['state']):
+        frame_states.append(df['state'][i:i+win].values)
+        i += win-overlap
+
+    states = [find_majority(state)[0] for state in frame_states]
     shifted_df = shifted_df.iloc[win-1::win-overlap, :]
+    shifted_df['state'] = states
     return shifted_df
 
 def save_as_csv(df, subj, dest, freq, win):
     filename = dest + '/' + subj + win + '_' + freq + 'hz.csv'
     df.to_csv(filename, index=False)
-    for subj in data:
-        with open(dest + '/' + subj + freq + win + 'hz.csv', 'w') as outfile:
-            f = csv.writer(outfile)
-            f.writerow(['x', 'y', 'z', 'state'])
-            for d in data:
-                print(data)
-                f.writerow([d['x'], d['y'], d['z'], d['state']])
-            outfile.close()
+    # for subj in data:
+    #     with open(dest + '/' + subj + freq + win + 'hz.csv', 'w') as outfile:
+    #         f = csv.writer(outfile)
+    #         f.writerow(['x', 'y', 'z', 'state'])
+    #         for d in data:
+    #             print(data)
+    #             f.writerow([d['x'], d['y'], d['z'], d['state']])
+    #         outfile.close()
 
 def load_dataset(source, freq):
     subjects = {}
