@@ -180,16 +180,16 @@ def shift_data(df, win, overlap):
     #         print('rounded down:', math.ceil(overlap))
     #         overlap = math.ceil(overlap)
 
-    frame_states = []
-    # The most occurring state is use as label for a given window frame
-    i = 0
-    while i < len(df['state']) and i+win <= len(df['state']):
-        frame_states.append(df['state'][i:i+win].values)
-        i += win-overlap
-
-    states = [find_majority(state)[0] for state in frame_states]
+    # frame_states = []
+    # # The most occurring state is use as label for a given window frame
+    # i = 0
+    # while i < len(df['state']) and i+win <= len(df['state']):
+    #     frame_states.append(df['state'][i:i+win].values)
+    #     i += win-overlap
+    #
+    # states = [find_majority(state)[0] for state in frame_states]
     shifted_df = shifted_df.iloc[win-1::win-overlap, :]
-    shifted_df['state'] = states
+    # shifted_df['state'] = states
     return shifted_df
 
 def save_as_csv(df, subj, dest, freq, win):
