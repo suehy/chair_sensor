@@ -6,7 +6,7 @@ var ObjectId = Schema.Types.ObjectId;
 var errorHandling;
 var logger;
 
-const strict = {strict: "throw"};
+// const strict = {strict: "throw"};
 
 const STATES = {
     "NOTSITTING": 0,
@@ -16,18 +16,12 @@ const STATES = {
 }
 // const UserCycles = new Schema({
 const Predictions = new Schema({
-    lastUpdated: {
-        type: Date,
-        // required: true,
-        // default: Date.now
-    },
     name: {
         type: String,
         required: true
     },
     predictions: [{
         type: [ObjectId], ref: 'PredictionHistory'
-        // required: true
     }],
     cycles: [{
         type: [ObjectId], ref: 'Cycle'
@@ -36,20 +30,9 @@ const Predictions = new Schema({
         type: Number,
         required: true
     }
-})//, strict)
+}, { timestamps: true })
 
-const Cycle = new Schema({
-    start: {
-        type: Date,
-        required: true
-    },
-    end: {
-        type: Date
-    }
-    // userId: {
-    //     type: String
-    // }
-})//, strict)
+const Cycle = new Schema({}, { timestamps: { createdAt: 'start', updatedAt: 'end' }})
 
 const PredictionHistory = new Schema({
     timestamp: {
@@ -61,7 +44,7 @@ const PredictionHistory = new Schema({
         type: Number,
         required: true
     }
-})//, strict)
+})
 
 // Also updates the latestState
 Predictions.methods.addPrediction = function(params) {
@@ -71,23 +54,47 @@ Predictions.methods.addPrediction = function(params) {
         .then((data) => {
             if (data) {
                 logger.log("info", "Found document for", params.name);
+                logger.log("info", "cycles:", data.cycles)
                 var HistoryModel = mongoose.model('PredictionHistory');
                 var newHistory = new HistoryModel({
-                    'state': params.prediction.state
+                    state: params.prediction.state
                 });
-                newHistory.save()
-                .then((history) => {
+                var histPromise = newHistory.save();
+
+                var CycleModel = mongoose.model('Cycle');
+                // TODO: handle different states too (PTs)
+                if (data.latestState == STATES.NOTSITTING && params.prediction.state == STATES.SITTING) {
+                    var newCycle = new CycleModel({});
+                    var saveCyclePromise = newCycle.save();
+                }
+                // TODO: handle different states too (PTs)
+                else if (data.latestState == STATES.SITTING && params.prediction.state == STATES.NOTSITTING) {
+                    // End the current cycle
+                    // Get last elem in cycle array and update 'end' field
+                    // Find cycle ID
+                    var updateCyclePromise = CycleModel.update({ _id: data.cycles[data.cycles.length-1] }, {});
+                }
+
+                Promise.all([histPromise, saveCyclePromise, updateCyclePromise])
+                .then(([history, cycle, update]) => {
                     logger.log("info", "History save success", history);
+
+                    var updatesObj = {
+                        predictions: history._id,
+                    }
+
+                    // Storing new cycle
+                    if (cycle) {
+                        updatesObj.cycles = cycle._id;
+                    }
+
                     var PredictionsModel = mongoose.model('Predictions');
                     resolve(PredictionsModel.update({ name: params.name },
                     {
                         $set: {
                             latestState: params.prediction.state
-                            // lastUpdated: params.prediction.timestamp
                         },
-                        $push: {
-                            predictions: history._id
-                        }
+                        $push: updatesObj
                     }));
                 })
                 .catch((err) => {
@@ -111,8 +118,22 @@ Predictions.methods.addPrediction = function(params) {
                         // 'lastUpdated': params['timestamp']
                         predictions: [history._id]
                     };
-                    var newPredictions = new PredictionsModel(prediction);
-                    resolve(newPredictions.save());
+
+                    if (params.prediction.state == STATES.SITTING) {
+                        var CycleModel = mongoose.model('Cycle');
+                        var newCycle = new CycleModel({});
+                        newCycle.save()
+                        .then((cycle) => {
+                            logger.log("info", "Cycle save success");
+                            prediction.cycles = [cycle._id];
+                            var newPredictions = new PredictionsModel(prediction);
+                            resolve(newPredictions.save());
+                        })
+                    }
+                    else {
+                        var newPredictions = new PredictionsModel(prediction);
+                        resolve(newPredictions.save());
+                    }
                 })
                 .catch((err) => {
                     logger.log("ERROR", "Predictions save failed", err);
@@ -124,7 +145,7 @@ Predictions.methods.addPrediction = function(params) {
             logger.log("ERROR", "findOne username failed", params.name, err)
             reject(err);
         })
-    })
+    });
 }
 
 Predictions.methods.getLatestState = function(params) {
