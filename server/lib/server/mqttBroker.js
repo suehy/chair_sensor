@@ -13,7 +13,12 @@ module.exports = function(app) {
 
     var settings = {
       port: app.settings.mqttBroker.port,
-      backend: ascoltatore
+      backend: ascoltatore,
+      http: {
+        port: 8080,
+        bundle: true,
+        static: './'
+      }
     };
 
     var server = new mosca.Server(settings);
@@ -44,14 +49,14 @@ module.exports = function(app) {
         }
 
         if (packet.topic === 'sample') {
-            logger.log('info', 'published to topic sample');
-
+            logger.log('info', 'published to topic sample', packet, client.id);
+            logger.log('info', 'payload', JSON.parse(packet.payload));
             // Predict state and then saves prediction
-            const sample = JSON.parse(packet.payload.sample);
-            app.components.Model.predict(sample)
+            const sample = JSON.parse(packet.payload).sample;
+            app.components.Model.Predict(sample)
             .then((state) => {
                 const prediction = {
-                    name: JSON.parse(packet.payload.name),
+                    name: JSON.parse(packet.payload).name,
                     prediction: {
                         state: state
                     }
@@ -69,13 +74,14 @@ module.exports = function(app) {
     });
 
     server.on('subscribed', function(topic, client) {
-        logger.log('Subscribed', client.id);
+        logger.log('Subscribed', client.id, topic);
 
         // Check if client has permission
+
     });
 
     // fired when the mqtt server is ready
     function setup() {
-        logger.log('Mosca server is up and running');
+        logger.log('Mosca server is up and running on port', settings.port);
     }
 };
