@@ -22,6 +22,8 @@ module.exports = function(app) {
 
     server.on('clientConnected', function(client) {
         logger.log('client connected', client.id);
+
+        // Check if client has permission
     });
 
     // fired when a message is received
@@ -40,6 +42,26 @@ module.exports = function(app) {
                 logger.log("error", error);
             });
         }
+
+        if (packet.topic === 'sample') {
+            logger.log('info', 'published to topic sample');
+
+            // Predict state and then saves prediction
+            const sample = JSON.parse(packet.payload.sample);
+            app.components.Model.predict(sample)
+            .then((state) => {
+                const prediction = {
+                    name: JSON.parse(packet.payload.name),
+                    prediction: {
+                        state: state
+                    }
+                }
+                return app.components.DataManagement.addPrediction(prediction);
+            })
+            .catch((err) => {
+                logger.log("ERROR", err);
+            })
+        }
     });
 
     server.on('clientDisconnected', function(client) {
@@ -48,6 +70,8 @@ module.exports = function(app) {
 
     server.on('subscribed', function(topic, client) {
         logger.log('Subscribed', client.id);
+
+        // Check if client has permission
     });
 
     // fired when the mqtt server is ready

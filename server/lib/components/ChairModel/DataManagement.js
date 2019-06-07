@@ -8,10 +8,6 @@ DataManagement = function DataManagement(app) {
 }
 var self;
 
-DataManagement.prototype.addSample = function(sample) {
-
-}
-
 DataManagement.prototype.addPrediction = function(params) {
     self.logger.log("info", "DataManagement addPrediction", params);
     return (new self.PredictionsModel).addPrediction(params);
