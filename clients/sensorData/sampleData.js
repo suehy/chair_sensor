@@ -99,9 +99,8 @@ function onRawData(raw_data) {
     //    raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z, state, subject);
 
     if (count == 0) {
-        sample[idx][0] = raw_data.accelerometer.x;
-        sample[idx][1] = raw_data.accelerometer.y;
-        sample[idx][2] = raw_data.accelerometer.z;
+        row = [raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z];
+        sample.append(row);
 
         if (idx == freq-1) {
             // Publish sample
