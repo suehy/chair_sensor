@@ -29,7 +29,7 @@ Publisher.prototype.connectToBroker = function(clientId, options, successCb) {
     console.log('Connecting to MQTT broker...');
 
     var broker = "mqtt:" + options.host + ";" + options.port;
-    var client = mqtt.connect(broker, {clientId: options.publisher});
+    var client = mqtt.connect(broker, {clientId: clientId});
 
     return new Promise((resolve, reject) => {
 
