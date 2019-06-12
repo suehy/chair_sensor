@@ -7,14 +7,15 @@ const topic = 'sample';
 
 var options = {
     // host: "health-iot.labs.vu.nl",
-   host: "localhost",
+//   host: "localhost",
+    host: "192.168.200.1",
     port: "1883"
 }
 
 const freq = 50;
 var count = 0;
 var idx = 0;
-var sample = [[]];
+var sample = [];
 
 keypress(process.stdin);
 process.stdin.setRawMode(true);
@@ -95,19 +96,23 @@ function onDiscover(thingy) {
 }
 
 function onRawData(raw_data) {
-    //console.log('Raw data: Accelerometer: x %d, y %d, z %d, state %d subject %s',
-    //    raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z, state, subject);
+    console.log('Raw data: Accelerometer: x %d, y %d, z %d', raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z);
 
-    if (count == 0) {
+    console.log(count);
+    if (count < 5) {
         row = [raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z];
-        sample.append(row);
+        sample.push(row);
 
         if (idx == freq-1) {
             // Publish sample
-            publisher.publish(sample);
-            myEmitter.emit('pause');
+            publisher.publish(sample, topic);
+	    count += 1;
+	    sample = [];
         }
         idx = (idx+1) % freq;
+    }
+    else if (count == 5) {
+        myEmitter.emit('pause');
     }
 }
 
