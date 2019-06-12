@@ -45,18 +45,6 @@ Subscriber.prototype.end = function() {
     self.client.end();
 }
 
-client.on('connect', function () {
-    client.subscribe('presence', function (err) {
-        if (!err) {
-            client.on('message', function (topic, message) {
-                // message is Buffer
-                console.log(message.toString())
-                client.end()
-            });
-        }
-    })
-})
-
 module.exports = function(options) {
     self = new Subscriber(options);
     return self;

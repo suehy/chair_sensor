@@ -1,6 +1,7 @@
 var Thingy = require('thingy52');
 var keypress = require('keypress');
 var publisher = require('../mqttClient/publisher')(options);
+var subscriber = require('../mqttClient/subscriber')(options);
 const EventEmitter = require('events');
 
 const topic = 'sample';
@@ -125,3 +126,12 @@ publisher.connectToBroker('sue', options, connectToBrokerSuccess)
     console.log('ERROR', error);
     publisher.end();
 })
+
+//subscriber.connectToBroker('sue', options, connectToBrokerSuccess)
+//.then(() => {
+//    subscriber.subscribe('ctrl');
+//})
+//.catch((err) => {
+//    console.log('ERROR', err);
+//    subscriber.end();
+//});
