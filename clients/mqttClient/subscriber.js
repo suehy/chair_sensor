@@ -6,9 +6,10 @@ Subscriber = function Subscriber(options) {
     this.options = options;
 };
 
-Subscriber.prototype.connectToBroker = function(broker, clientId, options, successCb) {
+Subscriber.prototype.connectToBroker = function(clientId, options, successCb) {
     console.log(clientId + ' connecting to MQTT ' + broker);
 
+    var broker = "mqtt:" + options.host + ";" + options.port;
     var client = mqtt.connect(broker, {clientId: clientId});
 
     return new Promise((resolve, reject) => {
