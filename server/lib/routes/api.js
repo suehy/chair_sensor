@@ -3,6 +3,12 @@ module.exports = function(app) {
     var router = app.express.Router();
     var logger = app.settings.logger;
 
+    app.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+    });
+
     // router.post('/insertRawAccelerometerData', function(req, res, next) {
     //     logger.log("info", "api/rawAccelerometerData", req.body.rawAccel);
     //     app.components.RawAccelerometerDataManagement.InsertRawAccelerometerData(req.body.rawAccel)
