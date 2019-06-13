@@ -35,18 +35,13 @@ const Predictions = new Schema({
 const Cycle = new Schema({}, { timestamps: { createdAt: 'start', updatedAt: 'end' }})
 
 const PredictionHistory = new Schema({
-    timestamp: {
-        type: Date
-//        default: Date.now,
-        // required: true
-    },
     state: {
         type: Number,
         required: true
     }
-})
+}, { timestamps: true })
 
-// Also updates the latestState
+// Also updates the latestState and cycles
 Predictions.methods.addPrediction = function(params) {
     logger.log("info", "In Predictions addPrediction", params);
     return new Promise((resolve, reject) => {
@@ -150,7 +145,7 @@ Predictions.methods.addPrediction = function(params) {
 
 Predictions.methods.getLatestState = function(params) {
     logger.log("info", "In Predicitions getLatestState", params);
-    return this.model('Predictions').findOne(params).exec()
+    return this.model('Predictions').findOne(params).populate('predictions').populate('cycles').exec()
     .then((data) => {
         if (data) {
             logger.log("info", "Found document for", params.name, data);
