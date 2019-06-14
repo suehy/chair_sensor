@@ -1,5 +1,23 @@
 var mosca = require('mosca');
 
+function indexOfMax(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var max = arr[0];
+    var maxIndex = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            maxIndex = i;
+            max = arr[i];
+        }
+    }
+
+    return maxIndex;
+}
+
 module.exports = function(app) {
     var logger = app.settings.logger;
 
@@ -48,20 +66,38 @@ module.exports = function(app) {
             });
         }
 
-        if (packet.topic === 'sample') {
+        if (packet.topic == 'sample') {
             logger.log('info', 'published to topic sample', packet, client.id);
-            logger.log('info', 'payload', JSON.parse(packet.payload));
+
             // Predict state and then saves prediction
-            const sample = JSON.parse(packet.payload).sample;
+            // Expects sample to have appropiate shape
+            // const sample = JSON.parse(packet.payload).sample;
+            const sample = JSON.parse(packet.payload);
+            logger.log(sample);
             app.components.Model.Predict(sample)
-            .then((state) => {
+            .then((probs) => {
+                logger.log(probs)
+                logger.log('STATE:', indexOfMax(probs));
                 const prediction = {
-                    name: JSON.parse(packet.payload).name,
+                    // name: JSON.parse(packet.payload).name,
+                    name: "jor",
                     prediction: {
-                        state: state
+                        state: indexOfMax(probs)
                     }
                 }
                 return app.components.DataManagement.addPrediction(prediction);
+            })
+            .then(() => {
+                return app.components.DataManagement.getLatestState({name: "jor"});
+            })
+            .then((state) => {
+                var packet = {
+                    topic: 'dashboard',
+                    payload: JSON.stringify(state)
+                }
+                server.publish(packet, function() {
+                    logger.log('Packet sent to', client.id);
+                })
             })
             .catch((err) => {
                 logger.log("ERROR", err);
