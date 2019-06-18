@@ -63,5 +63,19 @@ module.exports = function(app) {
         })
     })
 
+    // For testing Sample.addSample
+    router.post('/addSample', function(req, res) {
+        logger.log("info", "POST api/addSample", req.body);
+        app.components.DataManagement.addSample(req.body)
+        .then(() => {
+            logger.log("info", "POST api/addSample success");
+            res.status(200).end();
+        })
+        .catch((err) => {
+            logger.log("ERROR", "POST api/addSample failed", err);
+            res.status(400).end();
+        })
+    })
+
     return router;
 };

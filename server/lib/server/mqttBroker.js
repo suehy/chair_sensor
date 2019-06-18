@@ -51,7 +51,7 @@ module.exports = function(app) {
 
     // fired when a message is received
     server.on('published', function(packet, client) {
-        logger.log('Published', packet);
+        // logger.log('Published', packet);
 
         if (packet.topic === 'rawAccelData') {
             logger.log('info', 'published to topic rawAccelData');
@@ -66,29 +66,38 @@ module.exports = function(app) {
             });
         }
 
-        if (packet.topic == 'sample') {
+        else if (packet.topic == 'sample') {
             logger.log('info', 'published to topic sample', packet, client.id);
 
             // Predict state and then saves prediction
             // Expects sample to have appropiate shape
             // const sample = JSON.parse(packet.payload).sample;
-            const sample = JSON.parse(packet.payload);
+            var sample = JSON.parse(packet.payload);
+            var prediction = {
+                // name: JSON.parse(packet.payload).name,
+                name: "test",
+                prediction: {
+                    state: null
+                }
+            }
             logger.log(sample);
             app.components.Model.Predict(sample)
             .then((probs) => {
                 logger.log(probs)
                 logger.log('STATE:', indexOfMax(probs));
-                const prediction = {
-                    // name: JSON.parse(packet.payload).name,
-                    name: "jor",
-                    prediction: {
-                        state: indexOfMax(probs)
-                    }
-                }
+                prediction.prediction.state = indexOfMax(probs);
                 return app.components.DataManagement.addPrediction(prediction);
             })
             .then(() => {
-                return app.components.DataManagement.getLatestState({name: "jor"});
+                var sampleObj = {
+                    name: "test",
+                    state: prediction.prediction.state,
+                    sample: sample
+                }
+                return app.components.DataManagement.addSample(sampleObj);
+            })
+            .then(() => {
+                return app.components.DataManagement.getLatestState({name: "test"});
             })
             .then((state) => {
                 var packet = {
@@ -96,7 +105,7 @@ module.exports = function(app) {
                     payload: JSON.stringify(state)
                 }
                 server.publish(packet, function() {
-                    logger.log('Packet sent to', client.id);
+                    logger.log('Packet sent to', packet.topic);
                 })
             })
             .catch((err) => {
