@@ -136,8 +136,7 @@ function onRawData(raw_data) {
         row = [raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z];
         sample.push(row);
 
-        // if (idx == freq-1) {
-        if (idx == freq) {
+        if (idx == freq-1) {
             console.log('idx in the if', idx);
             // Publish sample
             publisher.publish(sample, topic);
