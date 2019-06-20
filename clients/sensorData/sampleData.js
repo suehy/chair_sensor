@@ -4,7 +4,7 @@ var publisher = require('../mqttClient/publisher')(options);
 var subscriber = require('../mqttClient/subscriber')(options);
 const EventEmitter = require('events');
 
-const topic = 'onlineTest';
+const topic = 'sample';
 
 
 const STATES = {
@@ -21,7 +21,7 @@ var options = {
     port: "1883"
 }
 
-var subject = process.argv.length >= 3 ? process.argv[2] : "test";
+var subject = process.argv.length >= 3 ? process.argv[2] : "";
 var enabled;
 var state = process.argv.length >= 4 ? parseInt(process.argv[3]) : STATES.SITTING;
 
@@ -125,14 +125,15 @@ function onDiscover(thingy) {
 }
 
 function onRawData(raw_data) {
-    console.log('Raw data: Accelerometer: x %d, y %d, z %d', raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z);
+//    console.log('Raw data: Accelerometer: x %d, y %d, z %d', raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z);
 
     var msg = { x: raw_data.accelerometer.x, y: raw_data.accelerometer.y, z: raw_data.accelerometer.z, state: state, subject: subject };
-    publisher.publish(msg, 'rawAccelData');
+//    publisher.publish(msg, 'rawAccelData');
 
     console.log(count);
-    if (count < 5) {
+    if (count < 1000) {
         row = [raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z];
+	sample.push(row);
 
         if (idx == freq-1) {
             // Publish sample
@@ -142,7 +143,7 @@ function onRawData(raw_data) {
         }
         idx = (idx+1) % freq;
     }
-    else if (count == 5) {
+    else if (count == 1000) {
         myEmitter.emit('pause');
     }
 }
