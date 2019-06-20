@@ -26,6 +26,7 @@ var enabled;
 var state = process.argv.length >= 4 ? parseInt(process.argv[3]) : STATES.SITTING;
 
 const freq = 50;
+const overlap = 40;
 var count = 0;
 var idx = 0;
 var sample = [];
@@ -133,15 +134,19 @@ function onRawData(raw_data) {
     console.log(count);
     if (count < 1000) {
         row = [raw_data.accelerometer.x, raw_data.accelerometer.y, raw_data.accelerometer.z];
-	sample.push(row);
+        sample.push(row);
 
         if (idx == freq-1) {
+            console.log('idx in the if', idx);
             // Publish sample
             publisher.publish(sample, topic);
-	    count += 1;
-	    sample = [];
+    	    count += 1;
+            // create overlapping windows
+            sample.splice(0,(freq-overlap));
         }
-        idx = (idx+1) % freq;
+        // idx = (idx+1) % freq;
+        idx = sample.length;
+        console.log('idx', idx);
     }
     else if (count == 1000) {
         myEmitter.emit('pause');
