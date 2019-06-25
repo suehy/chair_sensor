@@ -32,7 +32,13 @@ const Predictions = new Schema({
     }
 }, { timestamps: true })
 
-const Cycle = new Schema({}, { timestamps: { createdAt: 'start', updatedAt: 'end' }})
+const Cycle = new Schema({
+    isOpen: {
+        type: Boolean,
+        required: true,
+        default: true
+    }
+}, { timestamps: { createdAt: 'start', updatedAt: 'end' }})
 
 const PredictionHistory = new Schema({
     state: {
@@ -49,7 +55,7 @@ Predictions.methods.addPrediction = function(params) {
         .then((data) => {
             if (data) {
                 logger.log("info", "Found document for", params.name);
-                logger.log("info", "cycles:", data.cycles)
+                // logger.log("info", "cycles:", data.cycles)
                 var HistoryModel = mongoose.model('PredictionHistory');
                 var newHistory = new HistoryModel({
                     state: params.prediction.state
@@ -58,16 +64,16 @@ Predictions.methods.addPrediction = function(params) {
 
                 var CycleModel = mongoose.model('Cycle');
                 // TODO: handle different states too (PTs)
-                if (data.latestState == STATES.NOTSITTING && params.prediction.state == STATES.SITTING) {
+                if (data.latestState != STATES.SITTING && params.prediction.state == STATES.SITTING) {
                     var newCycle = new CycleModel({});
                     var saveCyclePromise = newCycle.save();
                 }
                 // TODO: handle different states too (PTs)
-                else if (data.latestState == STATES.SITTING && params.prediction.state == STATES.NOTSITTING) {
+                else if (data.latestState == STATES.SITTING && params.prediction.state != STATES.SITTING) {
                     // End the current cycle
                     // Get last elem in cycle array and update 'end' field
                     // Find cycle ID
-                    var updateCyclePromise = CycleModel.update({ _id: data.cycles[data.cycles.length-1] }, {});
+                    var updateCyclePromise = CycleModel.update({ _id: data.cycles[data.cycles.length-1] }, { $set: { isOpen: false } });
                 }
 
                 Promise.all([histPromise, saveCyclePromise, updateCyclePromise])
@@ -145,10 +151,10 @@ Predictions.methods.addPrediction = function(params) {
 
 Predictions.methods.getLatestState = function(params) {
     logger.log("info", "In Predicitions getLatestState", params);
-    return this.model('Predictions').findOne(params).populate('predictions').populate('cycles').exec()
+    return this.model('Predictions').findOne(params).populate('cycles').exec()
     .then((data) => {
         if (data) {
-            logger.log("info", "Found document for", params.name, data);
+            logger.log("info", "Found document for", params.name);
             return Promise.resolve(data);
         }
         else {

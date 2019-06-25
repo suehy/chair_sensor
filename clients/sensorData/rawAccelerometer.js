@@ -2,6 +2,8 @@ var Thingy = require('thingy52');
 var keypress = require('keypress');
 keypress(process.stdin);
 
+const topic = 'rawAccelData';
+
 process.stdin.on('keypress', function (ch, key) {
     console.log('got "keypress"', key);
     if (key && key.name == 's') { // sitting
