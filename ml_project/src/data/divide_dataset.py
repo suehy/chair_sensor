@@ -37,9 +37,9 @@ def main(source, freq):
         for name in dataByName:
             dataByName[name].sort(key=lambda x: datetime.datetime.strptime(x['timestamp'], format))
 
-        #f = open(dest, 'w')
-        #f.write(json.dumps(dataByName))
-        #f.close()
+        f = open('../../data/interim/dataByName' + freq_str + 'hz.json', 'w')
+        f.write(json.dumps(dataByName))
+        f.close()
 
         # countList = []
         # count = 0
