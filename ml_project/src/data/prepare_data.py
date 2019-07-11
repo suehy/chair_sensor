@@ -56,7 +56,8 @@ def main(source, dest, freq, win, test, overlap):
     i = 0
     total = 0
     for name in subjects:
-        if i >= nr_subjects - int(test):
+        # if i >= nr_subjects - int(test):
+        if name == test:
             print('test:', name)
             test_subjects.append(name)
             for j in range(len(subjects[name])):
@@ -92,7 +93,7 @@ def main(source, dest, freq, win, test, overlap):
         else:
             print('nope')
             framed_samples = [samples_dict[filename][i:i+int(win)] for i in range(0, len(samples_dict[filename]), int(win)-overlap) if i+overlap+int(win)-1 < len(samples_dict[filename])]
-        with open(dest + '/train/' + filename + '_' + win + '_' + freq + '.csv', 'w') as outFile:
+        with open(dest + '/train/keras/' + filename + '_' + freq + '_' + str(win) + '_' + str(overlap) + '.csv', 'w') as outFile:
             writer = csv.writer(outFile)
             writer.writerows(framed_samples)
         outFile.close()
@@ -103,7 +104,7 @@ def main(source, dest, freq, win, test, overlap):
             framed_samples = [[samples_dict[filename][i+int(win)-1]] for i in range(0, len(samples_dict[filename]), int(win)-overlap) if i+overlap+int(win)-1 <= len(samples_dict[filename])]
         else:
             framed_samples = [samples_dict[filename][i:i+int(win)] for i in range(0, len(samples_dict[filename]), int(win)-overlap) if i+overlap+int(win)-1 <= len(samples_dict[filename])]
-        with open(dest + '/test/' + filename + '_' + win + '_' + freq + '.csv', 'w') as outFile:
+        with open(dest + '/test/keras/' + filename + '_' + freq + '_' + str(win) + '_' + str(overlap) + '.csv', 'w') as outFile:
             writer = csv.writer(outFile)
             writer.writerows(framed_samples)
         outFile.close()
@@ -114,7 +115,7 @@ def main(source, dest, freq, win, test, overlap):
         shifted_data[name] = shift_data(data, int(win), overlap)
         shifted_data[name].insert(0, 'name', name)
         # Saving separate csv for each subject
-        save_as_csv(shifted_data[name], name, dest, freq, win)
+        save_as_csv(shifted_data[name], name, dest, freq, win, overlap)
 
     if not test == None:
         print('Nr. subjects in dataset:', len(shifted_data.keys()))
@@ -138,8 +139,8 @@ def main(source, dest, freq, win, test, overlap):
                 size += len(shifted_data[name])
             i += 1
 
-        train_df.to_csv(dest + '/train.csv', index=False)
-        test_df.to_csv(dest + '/test.csv', index=False)
+        train_df.to_csv(dest + '/sklearn/train' + freq + '_' + str(win) + '_' + str(overlap) + '.csv', index=False)
+        test_df.to_csv(dest + '/sklearn/test' + freq + '_' + str(win) + '_' + str(overlap) + '.csv', index=False)
 
 # Split x, y and z samples based on window size and then merge them together into training and test samples
 # def split_merge_data(data, win, test):
@@ -192,8 +193,8 @@ def shift_data(df, win, overlap):
     # shifted_df['state'] = states
     return shifted_df
 
-def save_as_csv(df, subj, dest, freq, win):
-    filename = dest + '/' + subj + win + '_' + freq + 'hz.csv'
+def save_as_csv(df, subj, dest, freq, win, overlap):
+    filename = dest + '/sklearn/' + subj + freq + '_' + str(win) + '_' + str(overlap) + '.csv'
     df.to_csv(filename, index=False)
     # for subj in data:
     #     with open(dest + '/' + subj + freq + win + 'hz.csv', 'w') as outfile:
@@ -214,10 +215,12 @@ def load_dataset(source, freq):
         match = re.search(pattern, name)
         if not match:
             continue
+        print(filename)
         #df = read_json(filename)
         with open(filename) as json_file:
             data = json.load(json_file)
             subject = ''.join(data.keys())
+            print(subject)
             subjects[subject] = data[subject]
             json_file.close()
     return subjects

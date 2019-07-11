@@ -37,9 +37,9 @@ def main(source, freq):
         for name in dataByName:
             dataByName[name].sort(key=lambda x: datetime.datetime.strptime(x['timestamp'], format))
 
-        f = open('../../data/interim/dataByName' + freq_str + 'hz.json', 'w')
-        f.write(json.dumps(dataByName))
-        f.close()
+        # f = open('../../data/interim/dataByName' + freq_str + 'hz.json', 'w')
+        # f.write(json.dumps(dataByName))
+        # f.close()
 
         # countList = []
         # count = 0
@@ -57,7 +57,7 @@ def main(source, freq):
 
         #divide by frequency
         if not freq == None:
-            step = 200/int(freq)
+            step = round(200/int(freq))
         for subj in dataByName:
             dividedData = {}
             dividedData[subj] = []
