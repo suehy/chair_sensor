@@ -55,16 +55,18 @@ def main(source, freq):
         #
         # print(countList)
 
-        #divide by frequency
+        dividedData = {}
+        # divide by frequency
         if not freq == None:
             step = round(200/int(freq))
         for subj in dataByName:
-            dividedData = {}
+            # dividedData = {}
             dividedData[subj] = []
             for i, val in enumerate(dataByName[subj]):
                 if i % step == 0:
                     dividedData[subj].append(dataByName[subj][i])
-            f = open('../../data/interim/' + subj + freq_str + 'hz.json', 'w')
+            # f = open('../../data/interim/' + subj + freq_str + 'hz.json', 'w')
+            f = open('../../data/interim/dataByName' + freq_str + 'hz.json', 'w')
             f.write(json.dumps(dividedData))
             f.close()
 

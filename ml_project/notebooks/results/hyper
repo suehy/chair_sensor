@@ -1,0 +1,44 @@
+bayes
+prams = {}
+
+cart
+params = {'criterion': ['gini', 'entropy'],
+      'splitter': ['best', 'random'],
+      'max_depth': [None, 20, 40, 60],
+      'min_samples_split': [2, 10, 20],
+      'min_samples_leaf': [1, 5, 10],
+      'max_leaf_nodes': [None, 20, 40, 60]}
+
+knn
+params = {'n_neighbors': [5, n_features, 2*n_features],
+      'weights': ['uniform', 'distance'],
+      'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute'],
+      'metric': ['minkowski', 'euclidean', 'manhattan', 'chebyshev']}
+
+rf
+params = {'n_estimators': [10, 100, 200],
+      'criterion': ['gini', 'entopy'],
+      'min_samples_split': [2, 4, 6],
+      'min_samples_leaf': [1, 5]}
+
+bag
+params = {'n_estimators': [10, 100, 200],
+          'max_samples': [1, 5, 10],
+          'max_features': [1, X_all.shape[1]],
+          'oob_score': [True, False]}
+
+gbm
+params = {'learning_rate': [0.1, 0.2, 0.4],
+      'criterion': ['friedman_mse', 'mae'],
+      'max_depth': [3, 6, 9],
+      'max_features': ['auto', 'sqrt', 'log2', None],
+      'validation_fraction': [0.1, 0.3]}
+
+svm
+
+fnn
+
+lstm
+
+dummy
+params = {'strategy': ['stratified', 'most_frequent', 'pior', 'uniform', 'constant']}

@@ -39,8 +39,8 @@ def main(source, dest, freq, win, test, overlap):
 
     print('Splitting raw data into seperate output files')
 
-    filenames_train = ['total_acc_x_train', 'total_acc_y_train', 'total_acc_z_train', 'state_train']
-    filenames_test = ['total_acc_x_test', 'total_acc_y_test', 'total_acc_z_test', 'state_test']
+    filenames_train = ['total_acc_x_train', 'total_acc_y_train', 'total_acc_z_train', 'state_train', 'subjects_train']
+    filenames_test = ['total_acc_x_test', 'total_acc_y_test', 'total_acc_z_test', 'state_test', 'subjects_test']
 
     filenames = []
     filenames.extend(filenames_train)
@@ -66,6 +66,7 @@ def main(source, dest, freq, win, test, overlap):
                 samples_dict['total_acc_y_test'].append(sample['y'])
                 samples_dict['total_acc_z_test'].append(sample['z'])
                 samples_dict['state_test'].append(sample['state'])
+                samples_dict['subjects_test'].append(name)
         else:
             print('train:', name)
             train_subjects.append(name)
@@ -75,6 +76,7 @@ def main(source, dest, freq, win, test, overlap):
                 samples_dict['total_acc_y_train'].append(sample['y'])
                 samples_dict['total_acc_z_train'].append(sample['z'])
                 samples_dict['state_train'].append(sample['state'])
+                samples_dict['subjects_train'].append(name)
         i += 1
 
     print(len(samples_dict['total_acc_x_train']))
@@ -90,23 +92,37 @@ def main(source, dest, freq, win, test, overlap):
         if filename == 'state_train':
             print('state_train')
             framed_samples = [[samples_dict[filename][i+int(win)-1]] for i in range(0, len(samples_dict[filename]), int(win)-overlap) if i+overlap+int(win)-1 < len(samples_dict[filename])]
+        elif filename == 'subjects_train':
+            print('subjects_train')
+            framed_samples = [samples_dict[filename][i+int(win)-1] for i in range(0, len(samples_dict[filename]), int(win)-overlap) if i+overlap+int(win)-1 < len(samples_dict[filename])]
         else:
             print('nope')
             framed_samples = [samples_dict[filename][i:i+int(win)] for i in range(0, len(samples_dict[filename]), int(win)-overlap) if i+overlap+int(win)-1 < len(samples_dict[filename])]
-        with open(dest + '/train/keras/' + filename + '_' + freq + '_' + str(win) + '_' + str(overlap) + '.csv', 'w') as outFile:
-            writer = csv.writer(outFile)
-            writer.writerows(framed_samples)
+        with open(dest + '/train/' + filename + '_' + freq + '_' + str(win) + '_' + str(overlap) + '.csv', 'w') as outFile:
+            if filename == 'subjects_train':
+                writer = csv.writer(outFile, delimiter='\n')
+                writer.writerow(framed_samples)
+            else:
+                writer = csv.writer(outFile)
+                writer.writerows(framed_samples)
         outFile.close()
 
     for filename in filenames_test:
         if filename == 'state_test':
             print('state_test')
             framed_samples = [[samples_dict[filename][i+int(win)-1]] for i in range(0, len(samples_dict[filename]), int(win)-overlap) if i+overlap+int(win)-1 <= len(samples_dict[filename])]
+        elif filename == 'subjects_train':
+            print('subjects_train')
+            framed_samples = [samples_dict[filename][i+int(win)-1] for i in range(0, len(samples_dict[filename]), int(win)-overlap) if i+overlap+int(win)-1 < len(samples_dict[filename])]
         else:
             framed_samples = [samples_dict[filename][i:i+int(win)] for i in range(0, len(samples_dict[filename]), int(win)-overlap) if i+overlap+int(win)-1 <= len(samples_dict[filename])]
-        with open(dest + '/test/keras/' + filename + '_' + freq + '_' + str(win) + '_' + str(overlap) + '.csv', 'w') as outFile:
-            writer = csv.writer(outFile)
-            writer.writerows(framed_samples)
+        with open(dest + '/test/' + filename + '_' + freq + '_' + str(win) + '_' + str(overlap) + '.csv', 'w') as outFile:
+            if filename == 'subjects_test':
+                writer = csv.writer(outFile, delimiter='\n')
+                writer.writerow(framed_samples)
+            else:
+                writer = csv.writer(outFile)
+                writer.writerows(framed_samples)
         outFile.close()
 
     shifted_data = {}
@@ -117,30 +133,30 @@ def main(source, dest, freq, win, test, overlap):
         # Saving separate csv for each subject
         save_as_csv(shifted_data[name], name, dest, freq, win, overlap)
 
-    if not test == None:
-        print('Nr. subjects in dataset:', len(shifted_data.keys()))
-        nr_subjects = len(shifted_data.keys())
-        train_df = DataFrame()
-        test_df = DataFrame()
+    # if not test == None:
+    print('Nr. subjects in dataset:', len(shifted_data.keys()))
+    nr_subjects = len(shifted_data.keys())
+    train_df = DataFrame()
+    test_df = DataFrame()
 
-        size = 0
-        i = 0
-        for name in shifted_data:
-            # if i >= nr_subjects - int(test):
-            if name in test_subjects:
-                path = 'test/'
-                print('test:', name)
-                test_df = test_df.append(shifted_data[name])
-                size += len(shifted_data[name])
-            else:
-                path = 'train/'
-                print('train:', name)
-                train_df = train_df.append(shifted_data[name])
-                size += len(shifted_data[name])
-            i += 1
+    size = 0
+    i = 0
+    for name in shifted_data:
+        # if i >= nr_subjects - int(test):
+        if name in test_subjects:
+            path = 'test/'
+            print('test:', name)
+            test_df = test_df.append(shifted_data[name])
+            size += len(shifted_data[name])
+        else:
+            path = 'train/'
+            print('train:', name)
+            train_df = train_df.append(shifted_data[name])
+            size += len(shifted_data[name])
+        i += 1
 
-        train_df.to_csv(dest + '/sklearn/train' + freq + '_' + str(win) + '_' + str(overlap) + '.csv', index=False)
-        test_df.to_csv(dest + '/sklearn/test' + freq + '_' + str(win) + '_' + str(overlap) + '.csv', index=False)
+    train_df.to_csv(dest + '/train' + '.csv', index=False)
+    test_df.to_csv(dest + '/test' + '.csv', index=False)
 
 # Split x, y and z samples based on window size and then merge them together into training and test samples
 # def split_merge_data(data, win, test):

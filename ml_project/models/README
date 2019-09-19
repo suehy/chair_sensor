@@ -1,0 +1,5 @@
+To upload the model in nodeJS, model.h5 is first converted into proper format with the following command:
+
+tensorflowjs_converter --input_format keras model.h5
+
+This results in two files, model.json and group1-shard1of1.bin.
